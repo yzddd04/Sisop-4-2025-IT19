@@ -1,0 +1,48 @@
+FROM ubuntu:20.04
+
+ENV DEBIAN_FRONTEND=noninteractive
+ENV LOG_FILE=/logs/it24.log
+
+# Install dependencies untuk FUSE 3 dan lainnya
+RUN apt-get update && apt-get install -y \
+    gcc \
+    pkg-config \
+    libfuse3-dev \
+    fuse3 \
+    bash \
+    syslog-ng \
+    && rm -rf /var/lib/apt/lists/*
+
+# Buat direktori kerja dan mount point
+WORKDIR /app
+RUN mkdir -p /antink_mount /logs /it24_host
+
+# Salin source code
+COPY antink.c .
+
+# Compile dengan FUSE 3 dan flag penting
+RUN gcc -Wall -D_FILE_OFFSET_BITS=64 -DFUSE_USE_VERSION=313 \
+    -D_POSIX_C_SOURCE=200809L \
+    antink.c -o antink \
+    `pkg-config fuse3 --cflags --libs`
+
+# Buat skrip startup yang lebih robust
+RUN printf '%s\n' \
+  '#!/bin/bash' \
+  'set -e' \
+  '' \
+  '# Pastikan direktori dan file log ada' \
+  'mkdir -p /logs' \
+  'touch "$LOG_FILE"' \
+  'chmod 666 "$LOG_FILE"' \
+  '' \
+  '# Setup syslog sebagai fallback' \
+  'service syslog-ng start' \
+  '' \
+  '# Jalankan FUSE filesystem' \
+  'echo "Starting FUSE filesystem..."' \
+  'exec ./antink -f /antink_mount' \
+  > start.sh && chmod +x start.sh
+
+# Jalankan dengan bash
+CMD ["bash", "start.sh"]

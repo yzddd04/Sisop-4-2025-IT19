@@ -1,0 +1,44 @@
+version: '3.8'
+
+services:
+  antink-init:
+    image: busybox
+    volumes:
+      - antink-logs:/logs
+    entrypoint: ["sh", "-c", "mkdir -p /logs && touch /logs/it24.log && chmod 666 /logs/it24.log"]
+    restart: "no"
+
+  antink-server:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - ./original_files:/it24_host  # Pastikan path source benar
+      - ./antink_mount:/antink_mount
+      - ./logs:/logs
+    depends_on:
+      - antink-init
+    cap_add:
+      - SYS_ADMIN
+    devices:
+      - /dev/fuse
+    security_opt:
+      - apparmor:unconfined
+    privileged: true
+    environment:
+      - BASE_PATH=/it24_host
+      - LOG_FILE=/logs/it24.log
+
+  antink-logger:
+    image: busybox
+    command: ["tail", "-F", "/logs/it24.log"]
+    volumes:
+      - antink-logs:/logs
+    depends_on:
+      - antink-init
+      - antink-server
+
+volumes:
+  it24_host:
+  antink_mount:
+  antink-logs:
