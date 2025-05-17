@@ -5,7 +5,7 @@
 | 3   | Andi Naufal Zaki       | 5027241059 |
 
 
-## SOAL 2
+## SOAL 2 
 1. Install Dependensi
 `
 sudo apt update
