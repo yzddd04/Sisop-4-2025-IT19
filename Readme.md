@@ -104,8 +104,7 @@ isi asli   # Tanpa enkripsi
 
 ---
 
-## **3. Cara Menjalankan Sistem**
-
+### **3. Cara Menjalankan Sistem**
 ### **Langkah 1: Persiapan Direktori**
 
 Pastikan struktur direktori sebagai berikut:
@@ -125,6 +124,9 @@ soal_3/
 docker-compose up --build -d
 ```
 
+![image](https://github.com/user-attachments/assets/05b2bb86-68d9-41f2-9f07-a28d4d91325d)
+
+
 ### **Langkah 3: Uji Fungsionalitas**
 
 * Tambah file ke `it24_host/`.
@@ -142,6 +144,9 @@ docker-compose up --build -d
   docker logs antink-logger
   ```
 
+  ![image](https://github.com/user-attachments/assets/6fd85d22-203a-40fd-9777-aa4d5ddaa549)
+
+
 ### **Langkah 4: Bersihkan Sistem**
 
 ```bash
@@ -150,7 +155,7 @@ docker-compose down
 
 ---
 
-## **4. Materi yang Digunakan**
+### **4. Materi yang Digunakan**
 
 ###  **Docker & Docker Compose**
 
@@ -180,7 +185,7 @@ docker-compose down
 
 ---
 
-## **5. Kesimpulan**
+### **5. Kesimpulan**
 
 Sistem **AntiNK** berhasil dibuat dengan fitur:
 
