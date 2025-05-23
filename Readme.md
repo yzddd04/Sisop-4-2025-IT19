@@ -277,7 +277,9 @@ gcc maimai_fs.c `pkg-config fuse --cflags --libs` -lssl -lcrypto -lz -o maimai_f
 bash
 Copy
 Edit
+```
 mkdir -p fuse_dir
 ./maimai_fs fuse_dir
+```
 Pastikan direktori chiho/ dan subdirektorinya tersedia di path yang sama dengan tempat program dijalankan.
 
