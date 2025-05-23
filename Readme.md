@@ -58,7 +58,7 @@ fusermount -u mount_dir
 
 
 
-###cara menual menjalankan nomor 2
+### cara menual menjalankan nomor 2
 cat relics/Baymax.jpeg.* > test.jpeg
 
 
@@ -199,4 +199,85 @@ Sistem ini memberikan **simulasi nyata** bagaimana sistem keamanan file dapat di
 
 ---
 
+
+## Soal 4
+## Deskripsi Umum
+
+Dalam universe **maimai**, terdapat 7 area (chiho) yang masing-masing memiliki perilaku penyimpanan data yang unik. Tugas kami adalah membuat sebuah sistem berkas virtual menggunakan **FUSE** (Filesystem in Userspace) yang dapat menangani semua mekanisme penyimpanan pada setiap chiho tersebut.
+
+Repositori ini berisi implementasi dari filesystem tersebut, dengan file utama bernama `maimai_fs.c`.
+
+## Struktur Direktori
+
+.
+├── chiho/
+│ ├── starter/
+│ ├── metro/
+│ ├── dragon/
+│ ├── blackrose/
+│ ├── heaven/
+│ └── skystreet/
+└── fuse_dir/
+├── starter/
+├── metro/
+├── dragon/
+├── blackrose/
+├── heaven/
+├── skystreet/
+└── 7sref/
+
+markdown
+Copy
+Edit
+
+## Penjelasan Chiho
+
+Setiap chiho memiliki perlakuan berbeda terhadap file yang ditulis/dibaca:
+
+### 1. Starter Chiho (`/starter/`)
+- File disimpan secara normal, tetapi ekstensi `.mai` ditambahkan di direktori asli.
+- Saat diakses melalui FUSE, ekstensi ini disembunyikan.
+
+### 2. Metro Chiho (`/metro/`)
+- File disimpan dengan encoding byte shifting: setiap byte diubah dengan menambahkan `(i % 256)`, di mana `i` adalah indeks byte.
+- Saat dibaca, nilai tersebut dikembalikan ke bentuk semula.
+
+### 3. Dragon Chiho (`/dragon/`)
+- Setiap karakter dienkripsi menggunakan algoritma ROT13.
+- Berlaku untuk huruf kapital dan kecil.
+
+### 4. Blackrose Chiho (`/blackrose/`)
+- File disimpan apa adanya dalam format biner tanpa encoding atau enkripsi.
+
+### 5. Heaven Chiho (`/heaven/`)
+- File dienkripsi menggunakan **AES-256-CBC** dari OpenSSL.
+- IV diturunkan secara dinamis dari SHA-256 hash path file.
+
+### 6. Skystreet Chiho (`/skystreet/`)
+- File dikompresi menggunakan **gzip (zlib)** saat disimpan, dan didekompresi saat dibaca.
+
+### 7. 7sRef Chiho (`/7sref/`)
+- Gateway ke semua chiho lain.
+- Akses file dilakukan dengan pola penamaan `[area]_[namafile]` dan dipetakan ke direktori chiho sesuai dengan nama areanya.
+
+## Fitur Tambahan
+
+- Semua operasi dasar filesystem (create, read, write, unlink, release, getattr, readdir) telah diimplementasikan.
+- Sistem mengenali file di `/7sref/` dan memetakan mereka ke direktori chiho yang sesuai dengan manipulasi nama file.
+- File di 7sref akan dimunculkan sebagai gabungan area dan nama file tanpa ekstensi.
+
+## Compile & Jalankan
+
+### 1. Compile
+
+```bash
+gcc maimai_fs.c `pkg-config fuse --cflags --libs` -lssl -lcrypto -lz -o maimai_fs
+```
+2. Jalankan FUSE Filesystem
+bash
+Copy
+Edit
+mkdir -p fuse_dir
+./maimai_fs fuse_dir
+Pastikan direktori chiho/ dan subdirektorinya tersedia di path yang sama dengan tempat program dijalankan.
 
